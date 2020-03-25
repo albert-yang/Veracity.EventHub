@@ -10,25 +10,25 @@ namespace Veracity.EventHub.RabbitMQ
 {
     public class RabbitMQProvider: IEventHub
     {
-        public class DiagnosticOperationNames
+        public class DiagnosticOperations
         {
-
+            public const string MessageHandling = "Message_Handling";
         }
 
         private const string ChannelType = "topic";
 
         private readonly IConnection _conn;
         private readonly IModel _channel;
-        private readonly DiagnosticSource _diagnostics;
+        private readonly DiagnosticListener _diagnostics;
 
-        public RabbitMQProvider(IConnectionFactory connFactory, DiagnosticSource diagnosticSource)
+        public RabbitMQProvider(IConnectionFactory connFactory, DiagnosticListener diagnostic)
         {
             if (connFactory == null)
                 throw new ArgumentNullException(nameof(connFactory));
-
+            
             _conn = connFactory.CreateConnection();
             _channel = _conn.CreateModel();
-            _diagnostics = diagnosticSource ?? throw new ArgumentNullException(nameof(diagnosticSource));
+            _diagnostics = diagnostic ?? throw new ArgumentNullException(nameof(diagnostic));
         }
 
         public void Subscribe(string @namespace, string eventType, Func<EventMessage, Task> handler)
@@ -46,10 +46,15 @@ namespace Veracity.EventHub.RabbitMQ
                     EventType = @event.RoutingKey,
                     MessageBody = @event.Body
                 };
-                
-                if (_diagnostics.IsEnabled())
-                var activity = new Activity("Http_Out");
-                _diagnostics.StartActivity();
+
+                Activity activity = null;
+
+                if (_diagnostics.IsEnabled() && _diagnostics.IsEnabled(DiagnosticOperations.MessageHandling, @event))
+                {
+                    activity = new Activity(DiagnosticOperations.MessageHandling);
+                    
+                    _diagnostics.StartActivity(activity, @event);
+                }
 
                 try
                 {
@@ -57,11 +62,17 @@ namespace Veracity.EventHub.RabbitMQ
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    if (_diagnostics.IsEnabled() && _diagnostics.IsEnabled(DiagnosticOperations.MessageHandling, @event))
+                    {
+                        _diagnostics.Write(DiagnosticOperations.MessageHandling, e);
+                    }
                 }
                 finally
                 {
-                    _diagnostics.StopActivity();
+                    if (_diagnostics.IsEnabled() && _diagnostics.IsEnabled(DiagnosticOperations.MessageHandling, @event) && activity != null)
+                    {
+                        _diagnostics.StopActivity(activity, @event);
+                    }
                 }
             };
         }
