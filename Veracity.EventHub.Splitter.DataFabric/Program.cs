@@ -23,7 +23,7 @@ namespace Veracity.EventHub.DataFabricArchiver
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddOptions();
-                    services.Configure<DaemonConfig>(hostContext.Configuration.GetSection("Daemon"));
+                    services.Configure<DataFabricSplitterConfig>(hostContext.Configuration.GetSection("Daemon"));
                     services.AddSingleton<IHostedService, DataFabricSplitterService>();
                 })
                 .ConfigureLogging((hostingContext, logging) => {

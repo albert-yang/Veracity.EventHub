@@ -5,7 +5,9 @@ namespace Veracity.EventHub.Abstraction
 {
     public interface IEventHub
     {
-        void Subscribe(string @namespace, string eventType, Func<EventMessage, Task> handler);
+        ISubscription Subscribe(string @namespace, string filter, Func<EventMessage, Task> handler);
+
+        ISubscription Subscribe(string @namespace, Func<EventMessage, Task> handler);
 
         void Publish(EventMessage eventMessage);
     }

@@ -21,4 +21,9 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.2" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Veracity.EventHub.Abstraction\Veracity.EventHub.Abstraction.csproj" />
+    <ProjectReference Include="..\Veracity.EventHub.RabbitMQ\Veracity.EventHub.RabbitMQ.csproj" />
+  </ItemGroup>
 </Project>
