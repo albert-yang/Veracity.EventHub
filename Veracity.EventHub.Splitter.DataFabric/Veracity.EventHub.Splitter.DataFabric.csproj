@@ -4,8 +4,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>dotnet-Veracity.EventHub.DataFabricIngester-81E86480-7A78-487D-854C-7F5B0FACD547</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <RootNamespace>Veracity.EventHub.DataFabricArchiver</RootNamespace>
-    <AssemblyName>Veracity.EventHub.DataFabricArchiver</AssemblyName>
+    <RootNamespace>Veracity.EventHub.Splitter.DataFabric</RootNamespace>
+    <AssemblyName>Veracity.EventHub.Splitter.DataFabric</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
