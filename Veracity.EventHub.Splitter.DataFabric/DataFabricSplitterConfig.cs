@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Veracity.EventHub.DataFabricArchiver
+﻿namespace Veracity.EventHub.Splitter.DataFabric
 {
     public class DataFabricSplitterConfig
     {

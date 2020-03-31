@@ -1,29 +1,55 @@
 using System.Threading.Tasks;
+using KubeClient;
+using KubeClient.Extensions.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Veracity.EventHub.DataFabricArchiver
+namespace Veracity.EventHub.Splitter.DataFabric
 {
     internal class Program
     {
+        public const string KubeConfigMapName = nameof(KubeConfigMapName);
+        public const string KubeSecretName = nameof(KubeSecretName);
+        public const string KubeNamespace = nameof(KubeNamespace);
+
         public static async Task Main(string[] args)
         {
             var builder = new HostBuilder()
-                .ConfigureAppConfiguration((hostingContext, config) =>
+                .ConfigureAppConfiguration((hostContext, cb) =>
                 {
-                    config.AddEnvironmentVariables();
+                    cb.AddJsonFile("appsettings.json", false, false)
+                        .AddJsonFile(
+                            $"appsettings.{hostContext.HostingEnvironment.EnvironmentName}.json", 
+                            true, false);
+
+                    var config = cb.Build();
+
+                    if (!hostContext.HostingEnvironment.IsDevelopment())
+                        cb.AddEnvironmentVariables()
+                            .AddKubeConfigMap(KubeClientOptions.FromPodServiceAccount(), 
+                                config[KubeConfigMapName], 
+                                config[KubeNamespace], 
+                                reloadOnChange: true)
+                            .AddKubeSecret(
+                                KubeClientOptions.FromPodServiceAccount(), 
+                                config[KubeSecretName], 
+                                config[KubeNamespace], 
+                                reloadOnChange: true);
 
                     if (args != null)
                     {
-                        config.AddCommandLine(args);
+                        cb.AddCommandLine(args);
                     }
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddOptions();
-                    services.Configure<DataFabricSplitterConfig>(hostContext.Configuration.GetSection("Daemon"));
+                    if (hostContext.HostingEnvironment.IsDevelopment())
+                        services.Configure<DataFabricSplitterConfig>(hostContext.Configuration.GetSection(nameof(DataFabricSplitterConfig)));
+                    else
+                        services.Configure<DataFabricSplitterConfig>(hostContext.Configuration);
                     services.AddSingleton<IHostedService, DataFabricSplitterService>();
                 })
                 .ConfigureLogging((hostingContext, logging) => {

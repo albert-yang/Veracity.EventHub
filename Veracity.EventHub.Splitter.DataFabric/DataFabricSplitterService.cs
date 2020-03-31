@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Veracity.EventHub.Abstraction;
 
-namespace Veracity.EventHub.DataFabricArchiver
+namespace Veracity.EventHub.Splitter.DataFabric
 {
     internal class DataFabricSplitterService : IHostedService
     {
