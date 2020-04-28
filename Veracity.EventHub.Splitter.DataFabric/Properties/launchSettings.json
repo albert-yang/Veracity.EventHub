@@ -1,13 +1,13 @@
 {
   "profiles": {
-    "Veracity.EventHub.DataFabricIngester": {
+    "Docker": {
+      "commandName": "Docker"
+    },
+    "Veracity.EventHub.Splitter.DataFabric": {
       "commandName": "Project",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
       }
-    },
-    "Docker": {
-      "commandName": "Docker"
     }
   }
 }

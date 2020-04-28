@@ -7,9 +7,11 @@ namespace Veracity.EventHub.Abstraction
     public class EventMessage
     {
         public string Namespace { get; set; }
+        
+        public string RouteKey { get; set; }
 
         public string EventType { get; set; }
-
+        
         public string ContentType { get; set; }
 
         public string ContentEncoding { get; set; }

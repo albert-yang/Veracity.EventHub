@@ -53,6 +53,16 @@ namespace Veracity.EventHub.RabbitMQ
         private readonly IModel _channel;
         private readonly DiagnosticListener _diagnostics;
 
+        public RabbitMQHub(IConnectionFactory connFactory)
+        {
+            if (connFactory == null)
+                throw new ArgumentNullException(nameof(connFactory));
+            
+            _conn = connFactory.CreateConnection();
+            _channel = _conn.CreateModel();
+            _diagnostics = null;
+        }
+
         public RabbitMQHub(IConnectionFactory connFactory, DiagnosticListener diagnostic)
         {
             if (connFactory == null)
@@ -65,17 +75,17 @@ namespace Veracity.EventHub.RabbitMQ
 
         public ISubscription Subscribe(string @namespace, Func<EventMessage, Task> handler)
         {
-            //subscribe without filter
+            //subscribe without eventTypeFilter
             return Subscribe(@namespace, "#", handler);
         }
 
-        public ISubscription Subscribe(string @namespace, string filter, Func<EventMessage, Task> handler)
+        public ISubscription Subscribe(string @namespace, string eventTypeFilter, Func<EventMessage, Task> handler)
         {
             if (string.IsNullOrEmpty(@namespace))
                 throw new ArgumentNullException(nameof(@namespace));
             
-            if (string.IsNullOrEmpty(filter))
-                throw new ArgumentNullException(nameof(filter));
+            if (string.IsNullOrEmpty(eventTypeFilter))
+                throw new ArgumentNullException(nameof(eventTypeFilter));
 
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
@@ -83,7 +93,7 @@ namespace Veracity.EventHub.RabbitMQ
             var channel = _conn.CreateModel();
             channel.ExchangeDeclare(@namespace, ChannelType);
             var queueName = channel.QueueDeclare().QueueName;
-            channel.QueueBind(queueName, @namespace, filter);
+            channel.QueueBind(queueName, @namespace, eventTypeFilter);
             var consumer = new AsyncEventingBasicConsumer(channel);
 
             async Task EventHandler(object sender, BasicDeliverEventArgs @event)
@@ -91,6 +101,7 @@ namespace Veracity.EventHub.RabbitMQ
                 var eventMessage = new EventMessage
                 {
                     Namespace = @event.Exchange,
+                    RouteKey = @event.RoutingKey,
                     EventType = @event.BasicProperties.Type,
                     ContentType = @event.BasicProperties.ContentType,
                     ContentEncoding = @event.BasicProperties.ContentEncoding,
@@ -100,7 +111,7 @@ namespace Veracity.EventHub.RabbitMQ
 
                 Activity activity = null;
 
-                if (_diagnostics.IsEnabled() && _diagnostics.IsEnabled(DiagnosticOperations.MessageHandling, @event))
+                if (_diagnostics != null && _diagnostics.IsEnabled() && _diagnostics.IsEnabled(DiagnosticOperations.MessageHandling, @event))
                 {
                     activity = new Activity(DiagnosticOperations.MessageHandling);
                     if (@event.BasicProperties != null)
@@ -118,14 +129,14 @@ namespace Veracity.EventHub.RabbitMQ
                 }
                 catch (Exception e)
                 {
-                    if (_diagnostics.IsEnabled() && _diagnostics.IsEnabled(DiagnosticOperations.MessageHandling, @event))
+                    if (_diagnostics != null && _diagnostics.IsEnabled() && _diagnostics.IsEnabled(DiagnosticOperations.MessageHandling, @event))
                     {
                         _diagnostics.Write(DiagnosticOperations.MessageHandlingError, e);
                     }
                 }
                 finally
                 {
-                    if (_diagnostics.IsEnabled() && _diagnostics.IsEnabled(DiagnosticOperations.MessageHandling, @event) && activity != null)
+                    if (_diagnostics != null && _diagnostics.IsEnabled() && _diagnostics.IsEnabled(DiagnosticOperations.MessageHandling, @event) && activity != null)
                     {
                         _diagnostics.StopActivity(activity, @event);
                     }
@@ -133,8 +144,9 @@ namespace Veracity.EventHub.RabbitMQ
             }
 
             consumer.Received += EventHandler;
+            channel.BasicConsume(consumer, queueName, true);
 
-            return new Subscription(@namespace, filter, () => consumer.Received -= EventHandler);
+            return new Subscription(@namespace, eventTypeFilter, () => consumer.Received -= EventHandler);
         }
 
         public void Publish(EventMessage eventMessage)
@@ -161,9 +173,12 @@ namespace Veracity.EventHub.RabbitMQ
                 properties.MessageId = Activity.Current.Id;
                 properties.CorrelationId = Activity.Current.RootId;
             }
-
+            
             _channel.ExchangeDeclare(eventMessage.Namespace, ChannelType);
-            _channel.BasicPublish(eventMessage.Namespace, eventMessage.EventType, properties, eventMessage.MessageBody);
+            _channel.BasicPublish(
+                eventMessage.Namespace, 
+                (string.IsNullOrEmpty(eventMessage.RouteKey)? eventMessage.EventType: eventMessage.RouteKey), 
+                properties, eventMessage.MessageBody);
         }
     }
 }
