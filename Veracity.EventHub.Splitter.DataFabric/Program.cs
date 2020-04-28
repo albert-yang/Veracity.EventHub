@@ -5,6 +5,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using RabbitMQ.Client;
+using Veracity.EventHub.Abstraction;
+using Veracity.EventHub.RabbitMQ;
 
 namespace Veracity.EventHub.Splitter.DataFabric
 {
@@ -24,19 +27,24 @@ namespace Veracity.EventHub.Splitter.DataFabric
                             $"appsettings.{hostContext.HostingEnvironment.EnvironmentName}.json", 
                             true, false);
 
-                    var config = cb.Build();
+                    if (hostContext.HostingEnvironment.IsDevelopment())
+                        cb.AddUserSecrets<Program>();
+                    else
+                    {
+                        var config = cb.Build();
 
-                    if (!hostContext.HostingEnvironment.IsDevelopment())
-                        cb.AddEnvironmentVariables()
-                            .AddKubeConfigMap(KubeClientOptions.FromPodServiceAccount(), 
-                                config[KubeConfigMapName], 
-                                config[KubeNamespace], 
-                                reloadOnChange: true)
-                            .AddKubeSecret(
-                                KubeClientOptions.FromPodServiceAccount(), 
-                                config[KubeSecretName], 
-                                config[KubeNamespace], 
-                                reloadOnChange: true);
+                        if (!hostContext.HostingEnvironment.IsDevelopment())
+                            cb.AddEnvironmentVariables()
+                                .AddKubeConfigMap(KubeClientOptions.FromPodServiceAccount(),
+                                    config[KubeConfigMapName],
+                                    config[KubeNamespace],
+                                    reloadOnChange: true)
+                                .AddKubeSecret(
+                                    KubeClientOptions.FromPodServiceAccount(),
+                                    config[KubeSecretName],
+                                    config[KubeNamespace],
+                                    reloadOnChange: true);
+                    }
 
                     if (args != null)
                     {
@@ -50,6 +58,8 @@ namespace Veracity.EventHub.Splitter.DataFabric
                         services.Configure<DataFabricSplitterConfig>(hostContext.Configuration.GetSection(nameof(DataFabricSplitterConfig)));
                     else
                         services.Configure<DataFabricSplitterConfig>(hostContext.Configuration);
+
+                    services.AddScoped<IEventHub>(sp => new RabbitMQHub(new ConnectionFactory{ HostName = ""})
                     services.AddSingleton<IHostedService, DataFabricSplitterService>();
                 })
                 .ConfigureLogging((hostingContext, logging) => {
