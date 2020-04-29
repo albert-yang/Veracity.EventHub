@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Veracity.EventHub.Abstracti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Veracity.EventHub.RabbitMQ", "Veracity.EventHub.RabbitMQ\Veracity.EventHub.RabbitMQ.csproj", "{86BE8319-6435-4AF0-877E-351F10D7725C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Veracity.EventHub.Splitter.DataFabric", "Veracity.EventHub.Splitter.DataFabric\Veracity.EventHub.Splitter.DataFabric.csproj", "{2F334C54-671C-40AE-9448-40761D286244}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Veracity.EventHub.EventGenerator", "Veracity.EventHub.EventGenerator\Veracity.EventHub.EventGenerator.csproj", "{C72567F5-9D5F-4525-B4F4-84139E64EA71}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Veracity.EventHub.EventGenerator", "Veracity.EventHub.EventGenerator\Veracity.EventHub.EventGenerator.csproj", "{C72567F5-9D5F-4525-B4F4-84139E64EA71}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Veracity.EventHub.DataFabricSplitter", "Veracity.EventHub.DataFabricSplitter\Veracity.EventHub.DataFabricSplitter.csproj", "{3CCC742B-840A-4AE5-A457-62E2FDB9213F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,14 +25,14 @@ Global
 		{86BE8319-6435-4AF0-877E-351F10D7725C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86BE8319-6435-4AF0-877E-351F10D7725C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{86BE8319-6435-4AF0-877E-351F10D7725C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2F334C54-671C-40AE-9448-40761D286244}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2F334C54-671C-40AE-9448-40761D286244}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2F334C54-671C-40AE-9448-40761D286244}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2F334C54-671C-40AE-9448-40761D286244}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C72567F5-9D5F-4525-B4F4-84139E64EA71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C72567F5-9D5F-4525-B4F4-84139E64EA71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C72567F5-9D5F-4525-B4F4-84139E64EA71}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C72567F5-9D5F-4525-B4F4-84139E64EA71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3CCC742B-840A-4AE5-A457-62E2FDB9213F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CCC742B-840A-4AE5-A457-62E2FDB9213F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CCC742B-840A-4AE5-A457-62E2FDB9213F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CCC742B-840A-4AE5-A457-62E2FDB9213F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

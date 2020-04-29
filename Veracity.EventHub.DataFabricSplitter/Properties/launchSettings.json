@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "Veracity.EventHub.DataFabricSplitter": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Docker": {
+      "commandName": "Docker"
+    },
+    "Azure Dev Spaces": {
+      "commandName": "AzureDevSpaces"
+    }
+  }
+}
