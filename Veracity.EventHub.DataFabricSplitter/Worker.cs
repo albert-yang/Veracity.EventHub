@@ -68,15 +68,15 @@ namespace Veracity.EventHub.DataFabricSplitter
         {
             stoppingToken.ThrowIfCancellationRequested();
 
-            await PushToDataFabric(message.RouteKey, new MemoryStream(message.MessageBody), stoppingToken);
+            await PushToDataFabric(message.RoutingKey, new MemoryStream(message.MessageBody), stoppingToken);
         }
 
-        private async Task PushToDataFabric(string routeKey, Stream stream, CancellationToken stoppingToken)
+        private async Task PushToDataFabric(string routingKey, Stream stream, CancellationToken stoppingToken)
         {
             stoppingToken.ThrowIfCancellationRequested();
 
             //Create a unique name for the blob
-            var containerName = $"{_config.ContainerNamePrefix}-{routeKey}";
+            var containerName = $"{_config.ContainerNamePrefix}-{routingKey}";
 
             var containerClient = new BlobContainerClient(_config.StorageConnectionString, containerName);
 

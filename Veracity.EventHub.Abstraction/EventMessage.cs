@@ -8,7 +8,7 @@ namespace Veracity.EventHub.Abstraction
     {
         public string Namespace { get; set; }
         
-        public string RouteKey { get; set; }
+        public string RoutingKey { get; set; }
 
         public string EventType { get; set; }
         

@@ -101,7 +101,7 @@ namespace Veracity.EventHub.RabbitMQ
                 var eventMessage = new EventMessage
                 {
                     Namespace = @event.Exchange,
-                    RouteKey = @event.RoutingKey,
+                    RoutingKey = @event.RoutingKey,
                     EventType = @event.BasicProperties.Type,
                     ContentType = @event.BasicProperties.ContentType,
                     ContentEncoding = @event.BasicProperties.ContentEncoding,
@@ -177,7 +177,7 @@ namespace Veracity.EventHub.RabbitMQ
             _channel.ExchangeDeclare(eventMessage.Namespace, ChannelType);
             _channel.BasicPublish(
                 eventMessage.Namespace, 
-                (string.IsNullOrEmpty(eventMessage.RouteKey)? eventMessage.EventType: eventMessage.RouteKey), 
+                (string.IsNullOrEmpty(eventMessage.RoutingKey)? eventMessage.EventType: eventMessage.RoutingKey), 
                 properties, eventMessage.MessageBody);
         }
     }

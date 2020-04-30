@@ -37,15 +37,15 @@ namespace Veracity.EventHub.DataFabricSplitter
                         var config = cb.Build();
 
                         if (!hostContext.HostingEnvironment.IsDevelopment())
-                            cb.AddKubeConfigMap(KubeClientOptions.FromPodServiceAccount(),
+                            cb/*.AddKubeConfigMap(KubeClientOptions.FromPodServiceAccount(),
                                 config[DataFabricSplitterConfig.KubeConfigMapName],
                                 config[DataFabricSplitterConfig.KubeNamespace],
+                                reloadOnChange: false)*/
+                            .AddKubeSecret(
+                                KubeClientOptions.FromPodServiceAccount(),
+                                config[DataFabricSplitterConfig.KubeSecretName],
+                                config[DataFabricSplitterConfig.KubeNamespace],
                                 reloadOnChange: false);
-                        // .AddKubeSecret(
-                        //     KubeClientOptions.FromPodServiceAccount(),
-                        //     config[DataFabricSplitterConfig.KubeSecretName],
-                        //     config[DataFabricSplitterConfig.KubeNamespace],
-                        //     reloadOnChange: false);
                     }
 
                     cb.AddEnvironmentVariables();
