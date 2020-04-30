@@ -26,7 +26,7 @@ namespace Veracity.EventHub.EventGenerator
             var routingKeyPrefix = args.Length > 0 ? args[0] : "dnvgl";
             for (var i = 0; i < 1000; ++i)
             {
-                var routingKey = $"{routingKeyPrefix}{((i + 1) % 10 + 1):0000}";
+                var routingKey = $"{routingKeyPrefix}{(i % 10 + 1):0000}";
                 rabbit.Publish(new EventMessage
                 {
                     ContentEncoding = "utf-8",
